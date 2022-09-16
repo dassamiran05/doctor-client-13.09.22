@@ -1,44 +1,69 @@
 import React from 'react';
-import { useSignInWithGoogle, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useSignInWithGoogle, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import auth from '../../firebase.init';
 import { useForm } from "react-hook-form";
 import LoadingButton from '../Shared/LoadingButton';
 import { Link } from 'react-router-dom';
 
-const Login = () => {
+const Signup = () => {
     const [signInWithGoogle, guser, gloading, gerror] = useSignInWithGoogle(auth);
     const { register, formState: { errors }, handleSubmit } = useForm();
+
+
     const [
-        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
         user,
         loading,
         error,
-      ] = useSignInWithEmailAndPassword(auth);
+    ] = useCreateUserWithEmailAndPassword(auth);
+
 
     const onSubmit = (data) => {
-        const {email, password} = data;
-        signInWithEmailAndPassword(email, password);
+        const { name, email, password } = data;
+        // signInWithEmailAndPassword(email, password);
+        createUserWithEmailAndPassword(email, password);
     };
+
     let signInError;
 
-    if(gloading || loading){
+    if (gloading || loading) {
         return <LoadingButton></LoadingButton>
     }
 
-    
-    if(gerror || error){
+
+    if (gerror || error) {
         signInError = <p className='text-red-500'>{error?.message || gerror?.message}</p>
     }
 
     if (user || guser) {
         console.log(user);
     }
+
     return (
         <div className='flex justify-center items-center h-screen'>
             <div className="card w-96 bg-base-100 shadow-xl">
                 <div className="card-body">
-                    <h2 className="text-center text-xl font-bold">Login</h2>
+                    <h2 className="text-center text-xl font-bold">Sign up</h2>
                     <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="form-control w-full max-w-xs">
+                            <label className="label">
+                                <span className="label-text">Name</span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Your name"
+                                className="input input-bordered w-full max-w-xs"
+                                {...register("name", {
+                                    required: {
+                                        value: true,
+                                        message: "Your name is required"
+                                    }
+                                })} />
+                            <label className="label">
+                                {errors.name?.type === 'required' && <span className="label-text-alt text-red-500">{errors.name.message}</span>}
+                                {/* {errors.email?.type === 'pattern' && <span className="label-text-alt text-red-500">{errors.email.message}</span>} */}
+                            </label>
+                        </div>
                         <div className="form-control w-full max-w-xs">
                             <label className="label">
                                 <span className="label-text">Email</span>
@@ -86,10 +111,10 @@ const Login = () => {
                             </label>
                         </div>
 
-                        <input className='btn w-full max-w-xs text-white' value='Login' type="submit" />
+                        <input className='btn w-full max-w-xs text-white' value='Sign up' type="submit" />
                         {signInError}
                     </form>
-                    <p>New to doctor portal <Link to="/signup" className='text-primary'> Create new Account</Link></p>
+                    <p>Already have an account <Link to="/login" className='text-primary'> Login here</Link></p>
                     <div className="divider">OR</div>
                     <button className="btn btn-outline" onClick={() => signInWithGoogle()}>Continue with Google</button>
                 </div>
@@ -98,4 +123,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signup;
