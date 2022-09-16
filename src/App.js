@@ -8,8 +8,11 @@ import Login from './Pages/Login/Login';
 import Footer from './Pages/Shared/Footer';
 import Appointment from './Pages/Appointment/Appointment';
 import Signup from './Pages/Login/Signup';
+import RequireAuth from './Pages/Login/RequireAuth';
 
 function App() {
+
+  
   return (
     <>
       <div className='max-w-7xl mx-auto px-12'>
@@ -17,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home></Home>}></Route>
           <Route path="/about" element={<About></About>}></Route>
-          <Route path="/appointment" element={<Appointment></Appointment>}></Route>
+          <Route path="/appointment" element={<RequireAuth><Appointment /></RequireAuth>}></Route>
           <Route path="/login" element={<Login></Login>}></Route>
           <Route path="/signup" element={<Signup></Signup>}></Route>
         </Routes>

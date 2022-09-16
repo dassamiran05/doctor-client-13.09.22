@@ -1,13 +1,15 @@
 import React from 'react';
-import { useSignInWithGoogle, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useSignInWithGoogle, useCreateUserWithEmailAndPassword, useUpdateProfile } from 'react-firebase-hooks/auth';
 import auth from '../../firebase.init';
 import { useForm } from "react-hook-form";
 import LoadingButton from '../Shared/LoadingButton';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const Signup = () => {
     const [signInWithGoogle, guser, gloading, gerror] = useSignInWithGoogle(auth);
     const { register, formState: { errors }, handleSubmit } = useForm();
+    const [updateProfile, updating, updateError] = useUpdateProfile(auth);
 
 
     const [
@@ -17,21 +19,26 @@ const Signup = () => {
         error,
     ] = useCreateUserWithEmailAndPassword(auth);
 
+    const navigate = useNavigate();
 
-    const onSubmit = (data) => {
+
+    const onSubmit = async data => {
         const { name, email, password } = data;
         // signInWithEmailAndPassword(email, password);
-        createUserWithEmailAndPassword(email, password);
+        await createUserWithEmailAndPassword(email, password);
+        await updateProfile({displayName:name});
+        console.log(name);
+        navigate('/appointment');
     };
 
     let signInError;
 
-    if (gloading || loading) {
+    if (gloading || loading || updating) {
         return <LoadingButton></LoadingButton>
     }
 
 
-    if (gerror || error) {
+    if (gerror || error || updateError) {
         signInError = <p className='text-red-500'>{error?.message || gerror?.message}</p>
     }
 
