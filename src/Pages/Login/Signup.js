@@ -4,12 +4,15 @@ import auth from '../../firebase.init';
 import { useForm } from "react-hook-form";
 import LoadingButton from '../Shared/LoadingButton';
 import { Link, useNavigate } from 'react-router-dom';
+import useToken from '../../hooks/useToken';
 
 
 const Signup = () => {
     const [signInWithGoogle, guser, gloading, gerror] = useSignInWithGoogle(auth);
     const { register, formState: { errors }, handleSubmit } = useForm();
     const [updateProfile, updating, updateError] = useUpdateProfile(auth);
+
+    
 
 
     const [
@@ -18,6 +21,8 @@ const Signup = () => {
         loading,
         error,
     ] = useCreateUserWithEmailAndPassword(auth);
+
+    const [token] = useToken(guser || user);
 
     const navigate = useNavigate();
 
@@ -28,7 +33,7 @@ const Signup = () => {
         await createUserWithEmailAndPassword(email, password);
         await updateProfile({displayName:name});
         console.log(name);
-        navigate('/appointment');
+        // navigate('/appointment');
     };
 
     let signInError;
@@ -42,8 +47,11 @@ const Signup = () => {
         signInError = <p className='text-red-500'>{error?.message || gerror?.message}</p>
     }
 
-    if (user || guser) {
-        console.log(user);
+    // if (user || guser) {
+    //     console.log(user);
+    // }
+    if (token) {
+        navigate('/appointment');
     }
 
     return (

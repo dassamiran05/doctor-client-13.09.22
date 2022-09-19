@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSignInWithGoogle, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import auth from '../../firebase.init';
 import { useForm } from "react-hook-form";
 import LoadingButton from '../Shared/LoadingButton';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import useToken from '../../hooks/useToken';
 
 const Login = () => {
     const [signInWithGoogle, guser, gloading, gerror] = useSignInWithGoogle(auth);
@@ -14,6 +15,7 @@ const Login = () => {
         loading,
         error,
       ] = useSignInWithEmailAndPassword(auth);
+      const [token] = useToken(user || guser);
 
     const onSubmit = (data) => {
         const {email, password} = data;
@@ -26,6 +28,12 @@ const Login = () => {
 
     let from = location.state?.from?.pathname || "/";
 
+    useEffect(() => {
+        if (token) {
+            navigate(from, { replace: true });
+        }
+    }, [token, from, navigate]);
+
     if(gloading || loading){
         return <LoadingButton></LoadingButton>
     }
@@ -35,9 +43,7 @@ const Login = () => {
         signInError = <p className='text-red-500'>{error?.message || gerror?.message}</p>
     }
 
-    if (user || guser) {
-        navigate(from, { replace: true });
-    }
+    
     return (
         <div className='flex justify-center items-center h-screen'>
             <div className="card w-96 bg-base-100 shadow-xl">
