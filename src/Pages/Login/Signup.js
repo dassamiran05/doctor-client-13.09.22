@@ -33,7 +33,6 @@ const Signup = () => {
         await createUserWithEmailAndPassword(email, password);
         await updateProfile({displayName:name});
         console.log(name);
-        // navigate('/appointment');
     };
 
     let signInError;
